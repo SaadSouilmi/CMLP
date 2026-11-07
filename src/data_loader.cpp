@@ -1,5 +1,4 @@
-#include <cstdio>
-#include <cstring>
+#include <string.h>
 
 
 internal i32 
@@ -35,7 +34,7 @@ load_file(const char* path, DataLoader* loader)
 	return 0;
 }
 
-internal i32
+internal void
 close_loader(DataLoader* loader)
 {
 	if (loader->f) { fclose(loader->f); }
@@ -54,7 +53,7 @@ dump_records(u8* buffer, u64 buffer_size, u64 n, DataLoader* loader)
 	return read;
 }
 
-internal i32
+internal void
 read_img_label(f32* X, u32* y, u64 n, const u8* buffer) {
 	for (u64 i = 0; i < n; ++i) {
 		memcpy(X, buffer, ImgSize);

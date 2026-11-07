@@ -11,14 +11,17 @@ Pixels are row-major: pixels[y * 28 + x] = grayscale(x, y) / 255.0.
 from io import BytesIO
 from pathlib import Path
 import struct
+from urllib.request import urlopen
 
 import polars as pl
 from PIL import Image
 
 
 def save_split(split):
-    url = f"hf://datasets/ylecun/mnist/mnist/{split}-00000-of-00001.parquet"
-    df = pl.read_parquet(url)
+    url = f"https://huggingface.co/datasets/ylecun/mnist/resolve/main/mnist/{split}-00000-of-00001.parquet"
+    with urlopen(url, timeout=60) as response:
+        parquet = response.read()
+    df = pl.read_parquet(BytesIO(parquet))
     path = Path(__file__).resolve().parent / f"{split}.bin"
     record = struct.Struct("<784fI")
 
