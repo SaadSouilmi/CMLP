@@ -16,6 +16,7 @@ struct DataLoader {
 	u32   curr;
 };
 
+
 internal i32 load_file(const char* path, DataLoader* loader);
 internal void close_loader(DataLoader* loader);
 

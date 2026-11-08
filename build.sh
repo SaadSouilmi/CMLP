@@ -2,4 +2,4 @@ mkdir -p build/
 
 set +x
 
-g++ -std=c++17 -fobjc-arc src/main.cpp src/viz.mm -framework Cocoa -o build/main
+g++ -std=c++23 src/main.cpp -o build/main -lm

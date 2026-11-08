@@ -1,7 +1,10 @@
 #import <stdlib.h>
+#import <math.h>
 
 #include "nn.h"
+#ifndef LOADVIZ
 #include "viz.h"
+#endif // LOADVIZ
 
 #include "nn.cpp"
 
@@ -24,8 +27,27 @@ main() {
 	for (int i = 0; i < NFeatures; ++i) {
 		pixels[i] = (u8)(X[i] * 255.0f + 0.5f);
 	}
+	
+	f64 mean = 0.0;
+	f64 m2   = 0.0;
+	f64 std  = 0.0;
+	u64 count = 0;
+	f32 min = X[0];
+	f32 max = X[0];
+	for (u64 i = 0; i < n*NFeatures; ++i)
+	{
+		f32 x = X[i];
+		min = Min(min, x);
+		max = Max(max, x);
 
-	show_grayscale(pixels, XDim, YDim);
+		++count;
+		f64 delta = x - mean;
+		mean += delta/(f64)count;
+		m2   += delta * (x - mean);
+	}
+	std = sqrt(m2 / count);
+
+	printf("Mean = %f, Std = %f, Min = %f, Max = %f\n", mean, std, min, max);
 
 	close_loader(&loader);
 	return 0;
