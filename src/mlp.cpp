@@ -62,18 +62,62 @@ matsub(Matrix* C, const Matrix* A, const Matrix* B)
 	return 0;
 }
 
-internal i32
-matmul(Matrix* C, const Matrix* A, const Matrix* B)
+internal void
+_matmul_mm(Matrix* C, const Matrix* A, const Matrix* B)
 {
-	if (A->n != B->m || C->m != A->m || C->n != B->n) { return -1; }
-	
-	matzero(C);
 	for (u32 i = 0; i < A->m; ++i) {
 		for (u32 k = 0; k < A->n; ++k) {
 			for (u32 j = 0; j < B->n; ++j) {
 				mat_at(C, i, j) += mat_at(A, i, k) * mat_at(B, k, j);
 			}
 		}
+	}
+}
+
+internal void
+_matmul_tm(Matrix* C, const Matrix* A, const Matrix* B)
+{
+	for (u32 k = 0; k < A->n; ++k) {
+		for (u32 i = 0; i < A->m; ++i) {
+			for (u32 j = 0; j < B->n; ++j) {
+				mat_at(C, i, j) += mat_at(A, k, i) * mat_at(B, k, j);
+			}
+		}
+	}
+}
+
+// TODO(Saad)
+internal void
+_matmul_mt(Matrix* C, const Matrix* A, const Matrix* B)
+{
+
+}
+
+// TODO(Saad)
+internal void
+_matmul_tt(Matrix* C, const Matrix* A, const Matrix* B)
+{
+
+}
+// TODO(Saad): handle transpose
+// so add matmuls for mm tm mt tt
+// Inspired by : https://www.youtube.com/watch?v=hL_n_GljC0I&t=1161s
+internal i32
+matmul(Matrix* C, const Matrix* A, const Matrix* B, i32 At, i32 Bt)
+{
+	u32 ARows = (At) : A->n ? A->m;
+	u32 BRows = (Bt) : B->n ? B->m;
+	u32 ACols = (At) : A->m ? A->n;
+	u32 BCols = (Bt) : B->m ? B->n;
+	if (ACols != BRows || C->m != ARows || C->n != BCols) { return -1; }
+	
+	matzero(C);
+	switch((At<<1) | Bt)
+	{
+		case 0b00: { _matmul_mm(C, A, B); } break;
+		case 0b01: { _matmul_mt(C, A, B); } break;
+		case 0b10: { _matmul_tm(C, A, B); } break;
+		case 0b00: { _matmul_tt(C, A, B); } break;
 	}
 	return 0;
 }
@@ -91,6 +135,7 @@ relu(Matrix* C, const Matrix* A)
 	return 0;
 }
 
+// TODO(Saad): To revisit, probably need to do this across rows/cols
 internal i32
 softmax(Matrix* p, const Matrix* logits)
 {
@@ -104,20 +149,5 @@ softmax(Matrix* p, const Matrix* logits)
 		sum += p->data[i];
 	}
 	matdiv(p, sum);
-	return 0;
-}
-
-internal i32
-mse(f64* L, const Matrix* y_hat, const Matrix* y)
-{
-	if (y_hat->n != y->n || y_hat->m != y->m) { return -1; }
-	
-	f64 mean = 0;
-	u64 size = y->m * y->n;
-	for (u64 i = 0; i < size; ++i) {
-		f64 l = (f64)(y_hat->data[i] - y->data[i]) * (y_hat->data[i] - y->data[i]);
-		mean += (l - mean)/(i+1);
-	}
-	*L = mean;
 	return 0;
 }

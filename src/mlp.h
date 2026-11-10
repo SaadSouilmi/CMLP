@@ -21,7 +21,7 @@ internal i32 matsub(Matrix* C, const Matrix* A, const Matrix* B);
 internal i32 matmul(Matrix* C, const Matrix* A, const Matrix* B);
 
 internal i32 relu(Matrix* C, const Matrix* A);
+// TODO(Saad): see mlp.cpp
 internal i32 softmax(Matrix* p, const Matrix* logits);
-internal i32 mse(f64* L, const Matrix* y_hat, const Matrix* y);
 
 #endif // MLP_H
