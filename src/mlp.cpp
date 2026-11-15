@@ -86,21 +86,30 @@ _matmul_tm(Matrix* C, const Matrix* A, const Matrix* B)
 	}
 }
 
-// TODO(Saad)
 internal void
 _matmul_mt(Matrix* C, const Matrix* A, const Matrix* B)
 {
-
+	for (u32 i = 0; i < A->m; ++i) {
+		for (u32 j = 0; j < B->n; ++j) {
+			for (u32 k = 0; k < A->n; ++k) {
+				mat_at(C, i, j) += mat_at(A, i, k) * mat_at(B, j, k);
+			}
+		}
+	}
 }
 
-// TODO(Saad)
 internal void
 _matmul_tt(Matrix* C, const Matrix* A, const Matrix* B)
 {
-
+	for (u32 i = 0; i < A->m; ++i) {
+		for (u32 j = 0; j < B->n; ++j) {
+			for (u32 k = 0; k < A->n; ++k) {
+				mat_at(C, i, j) += mat_at(A, k, i) * mat_at(B, j, k);
+			}
+		}
+	}
 }
-// TODO(Saad): handle transpose
-// so add matmuls for mm tm mt tt
+//
 // Inspired by : https://www.youtube.com/watch?v=hL_n_GljC0I&t=1161s
 internal i32
 matmul(Matrix* C, const Matrix* A, const Matrix* B, i32 At, i32 Bt)
@@ -117,7 +126,7 @@ matmul(Matrix* C, const Matrix* A, const Matrix* B, i32 At, i32 Bt)
 		case 0b00: { _matmul_mm(C, A, B); } break;
 		case 0b01: { _matmul_mt(C, A, B); } break;
 		case 0b10: { _matmul_tm(C, A, B); } break;
-		case 0b00: { _matmul_tt(C, A, B); } break;
+		case 0b11: { _matmul_tt(C, A, B); } break;
 	}
 	return 0;
 }
